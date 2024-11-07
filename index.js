@@ -1,37 +1,46 @@
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
 const { SerialPort } = require('serialport');
+const { parseToFloat, writeToCsv } = require('./utils')
+const serialport = new SerialPort({ path: '/dev/ttyACM0', baudRate: 9600 },
+    function (err) {
+        if (err) {
+          return console.log('Error connecting to arduino: ', err.message)
+        }}
+);
 
-const serialport = new SerialPort({ path: '/dev/ttyACM0', baudRate: 9600 });
 
-const localReadingFilePath= path.join(__dirname, 'readings.csv');
+let usbDriveInserted = false;
+let logFilePath;
 
-const env = 'local';
 
-function writeToCsv(sensorReadings) {
-    const timestamp = new Date().toISOString();
-    console.log(`Timestamp: ${timestamp} - (${JSON.stringify(sensorReadings)}) `);
-
-    const {l1VoltageReading, l2VoltageReading, l3VoltageReading, currentReading} = sensorReadings
-    const csvRow = `${timestamp},${l1VoltageReading},${l2VoltageReading},${l3VoltageReading},${currentReading}\n`;
-
-    // Check if the file exists; if not, write the header
-    if (!fs.existsSync(localReadingFilePath)) {
-        fs.writeFileSync(localReadingFilePath, 'Timestamp,L1 Voltage, L2 Voltage, L3 Voltage, Current\n');
+function configureUsb() {
+    const mountFolder = '/media/liamdoherty';
+    try {
+        const usbDrives = fs.readdirSync(mountFolder);
+        if (usbDrives.length > 0) {
+            console.log('USB drive detected and mounted to: ' + usbDrives[0]);
+            logFilePath = path.join(mountFolder, usbDrives[0], 'readings.csv');
+             // Attempt to change permissions for write access
+            usbDriveInserted = true;
+        }
+    } catch (err) {
+        console.error('USB drive not detected:', err);
+        usbDriveInserted = false
     }
-    fs.appendFileSync(localReadingFilePath, csvRow);
 }
 
-function parseToFloat(input) {
-    return isNaN(parseFloat(input)) ? 0.0 : parseFloat(input);
-}
-
+// Call once at startup and periodically to detect any changes in USB
+configureUsb();
 
 // Buffer to hold incoming serial data
 let serialBuffer = '';
 
 serialport.on('data', (data) => {
+    if(usbDriveInserted === false){
+        console.warn('USB Drive not inserted')
+        return false;
+    }
     // Append new data to the buffer
     serialBuffer += data.toString();
 
@@ -49,7 +58,9 @@ serialport.on('data', (data) => {
             l3VoltageReading: parseToFloat(l3VoltageReading),
             currentReading: parseToFloat(currentReading)
         };
-
-        writeToCsv(sensorReadings);
+        configureUsb();
+        if(usbDriveInserted===true){
+          writeToCsv(sensorReadings, logFilePath);
+        }
     }
 });
