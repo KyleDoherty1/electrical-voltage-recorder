@@ -1,18 +1,18 @@
 
 # Overview
 This project uses an Arduino Uno to measure AC voltage and current using:
-- Three voltage sensors connected to pins `A0`, `A1` and `A2`.
+- Three voltage sensors (L1, L2 & L3) connected to pins `A0`, `A1` and `A2`.
 - A Gravity Analog AC Current Sensor connected to pin `A3`.
 
-The script calculates the root mean square (RMS) voltage and current values and prints them to the serial monitor for a Rasperry PI to read. It also controls a set of LED's to turn of if it's reading voltage and to 
+The script calculates the root mean square (RMS) voltage and current values and prints them to the serial monitor for a Rasperry PI to read. It also controls a set of LED's. There are green LED's for each phase to indicate if voltage is being read and a red LED to indicate if a current fault has occured.
 
 ---
 
 ## Features
 
-- Measures and prints the RMS voltage for two inputs (`l1` and `l2`).
+- Measures and prints the RMS voltage for three inputs (`l1`, `l2` & `l3`).
 - Reads and prints the RMS current from the AC current sensor.
-- Built-in or external LED lights up if the current exceeds 43 amps (configurable threshold).
+- Built-in or external LED lights up if the current exceeds 18 amps (configurable threshold).
 
 ---
 
@@ -36,9 +36,12 @@ The script calculates the root mean square (RMS) voltage and current values and 
 |---------------------|-------------|----------------------------------|
 | Voltage Sensor 1    | `A0`        | For `l1` voltage measurement    |
 | Voltage Sensor 2    | `A1`        | For `l2` voltage measurement    |
+| Voltage Sensor 3    | `21`        | For `l3` voltage measurement    |
 | AC Current Sensor   | `A2`        | For current measurement          |
-| Built-in LED        | `13`        | Turns on if current > threshold  |
-| Optional RGB LED    | `9`         | Use red for threshold indication |
+| L1 Voltage LED        | `13`        | Green to indicate voltage being read  |
+| L2 Voltage LED        | `13`        | Green to indicate voltage being read  |
+| L3 Voltage LED        | `13`        | Green to indicate voltage being read  |
+| Current LED    | `9`         | Use red for threshold indication |
 
 ---
 
