@@ -43,7 +43,7 @@ The script calculates the root mean square (RMS) voltage and current values and 
 | L3 Voltage LED        | `13`        | Green to indicate voltage being read  |
 | Current LED    | `9`         | Use red for threshold indication |
 
-![IMG_20241123_144246](https://github.com/user-attachments/assets/26f52852-ceeb-4038-8206-02b6eea9ec8b)
+![IMG_20241123_144246](https://github.com/user-attachments/assets/26f52852-ceeb-4038-8206-02b6eea9ec8b | width=100)
 
 
 ---
