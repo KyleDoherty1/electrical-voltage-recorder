@@ -1,4 +1,79 @@
-## Autorun Configuration
+
+# Overview
+This project uses an Arduino Uno to measure AC voltage and current using:
+- Three voltage sensors connected to pins `A0`, `A1` and `A2`.
+- A Gravity Analog AC Current Sensor connected to pin `A3`.
+
+The script calculates the root mean square (RMS) voltage and current values and prints them to the serial monitor for a Rasperry PI to read. It also controls a set of LED's to turn of if it's reading voltage and to 
+
+---
+
+## Features
+
+- Measures and prints the RMS voltage for two inputs (`l1` and `l2`).
+- Reads and prints the RMS current from the AC current sensor.
+- Built-in or external LED lights up if the current exceeds 43 amps (configurable threshold).
+
+---
+
+## Components Used
+
+1. **Arduino Uno**
+2. **MCM Voltage Sensors**
+   - Connected to `A0` and `A1`
+   - Requires the [MCMVoltSense Library](https://github.com/mcmvintage/MCMVoltSense)
+3. **Gravity Analog AC Current Sensor**
+   - Connected to `A2`
+   - [Gravity Sensor Documentation](https://wiki.dfrobot.com/Gravity_Analog_AC_Current_Sensor__SKU_SEN0211_)
+4. **LED**
+   - Built-in (pin `13`) or external (optional)
+
+---
+
+## Pin Configuration
+
+| Component           | Arduino Pin | Notes                            |
+|---------------------|-------------|----------------------------------|
+| Voltage Sensor 1    | `A0`        | For `l1` voltage measurement    |
+| Voltage Sensor 2    | `A1`        | For `l2` voltage measurement    |
+| AC Current Sensor   | `A2`        | For current measurement          |
+| Built-in LED        | `13`        | Turns on if current > threshold  |
+| Optional RGB LED    | `9`         | Use red for threshold indication |
+
+---
+
+## Installation
+
+### Prerequisites
+1. Install the Arduino IDE.
+2. Install the **MCMVoltSense Library**:
+   - Download it from [here](https://github.com/mcmvintage/MCMVoltSense).
+   - Add the library to the Arduino IDE:
+     - Go to **Sketch > Include Library > Add .ZIP Library...** and select the downloaded file.
+
+### Wiring
+1. Connect the voltage sensors to pins `A0` and `A1`.
+2. Connect the Gravity AC Current Sensor to pin `A2`.
+3. Optionally, connect an external LED or RGB LED with a resistor to pin `9`.
+
+### Uploading the Code
+1. Open the provided Arduino script in the IDE.
+2. Connect the Arduino to your computer.
+3. Set the **baud rate** in the Serial Monitor to `115200`.
+4. Upload the code.
+
+---
+
+## Usage
+
+### Serial Output
+The script prints the following to the Serial Monitor every second:
+- Voltage readings (`l1` and `l2`) in volts.
+- Current reading in amps.
+
+Example output:
+
+# Autorun Configuration
 This program is using `systemd` to run on boot. The service has been called `electrical-logger.service` in my instance. The configuration is stored in example at `/etc/systemd/system/electrical-logger.service`.
 
 The configuration can be set up as follows:
@@ -23,7 +98,7 @@ WantedBy=multi-user.target
 - You can always check the status of the service by running `sudo systemctl status electrical-logger.service`
 - You can also view the live logs of the service by running `sudo journalctl -u electrical-logger.service -f`
 
-## Stop / Start on USB Activity
+# Stop / Start on USB Activity
 This system stops trying to write to the USB device if it's plugged out. Similarl to that, if a USB device is plugged in, it starts logging out the data to the file `readings.csv` again. To achieve this, a `udev` rule was used. The current setup used is described below:
 - Create a `udev` rule file:
     ```c
